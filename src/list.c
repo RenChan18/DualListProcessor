@@ -1,5 +1,4 @@
 // list.c
-#include <stdio.h>
 #include "list.h"
 
 List* createList() {
