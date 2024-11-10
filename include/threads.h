@@ -10,13 +10,20 @@
 #include <stdlib.h>
 #include <unistd.h> 
 #include "list.h"
+
 #ifndef RAND_RANGE
 #define RAND_RANGE 100
 #endif
 
 #ifndef ARRAY_SIZE
-#define ARRAY_SIZE 10
+#define ARRAY_SIZE 23
 #endif
+
+typedef struct {
+    List *list;
+    int threadIndex;
+} ThreadArg;
+
 
 void random_fill(int *arr, size_t size);
 List* initAndFillList(); 

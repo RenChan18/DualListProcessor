@@ -36,18 +36,18 @@ int *arr = malloc(ARRAY_SIZE * sizeof(int));
 void* processBitCount1(void *arg) {
     List *list = (List*) arg;
     int count = 0;
-     while (1) {
+    while (1) {
+        pthread_mutex_lock(&list->mutex);
         if (list->head == NULL) {
-            pthread_mutex_unlock(&list->mutex);              
+            pthread_mutex_unlock(&list->mutex);
             break;
-        }        
-        pthread_mutex_lock(&list->mutex); 
-        count++;
-        usleep(100000);
+        }
         popFront(list);
         printf("List after popFront: ");
         printList(list);
         pthread_mutex_unlock(&list->mutex);
+        count++;
+        usleep(1);      
     }
     printf("TH1 count: %d\n", count);
     return NULL;
@@ -57,17 +57,17 @@ void* processBitCount2(void *arg) {
     List *list = (List*) arg;
     int count = 0;
     while (1) {
+        pthread_mutex_lock(&list->mutex); 
         if (list->tail == NULL) {
             pthread_mutex_unlock(&list->mutex);
             break;
-        }        popFront(list);
-        pthread_mutex_lock(&list->mutex); 
-        count++;
-        usleep(100000);
+        }
         popBack(list);
         printf("List after popBack: ");
         printList(list);
         pthread_mutex_unlock(&list->mutex);
+        count++;
+        usleep(1);
     }
     printf("TH2 count: %d\n", count);
     return NULL;
@@ -78,6 +78,11 @@ void elementProcessing() {
     pthread_t thread1, thread2;
     int  iret1, iret2;
     List *a = initAndFillList();
+
+    ThreadArg arg1 = { a, 1 }; 
+    ThreadArg arg2 = { a, 2 };
+
+
     iret1 = pthread_create( &thread1, NULL, processBitCount1, (void*) a);
 
     if(iret1) {
