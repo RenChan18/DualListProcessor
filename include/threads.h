@@ -2,12 +2,26 @@
 #ifndef THREADS_H
 #define THREADS_H
 
+#include <stdio.h>
+#include <time.h>
+#include "list.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h> 
 #include "list.h"
+#ifndef RAND_RANGE
+#define RAND_RANGE 100
+#endif
 
-void* processBitCount(void (*func)(List *list, int value),void* arg);
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE 10
+#endif
+
+void random_fill(int *arr, size_t size);
+List* initAndFillList(); 
+void* processBitCount1(void *arg);
+void* processBitCount2(void *arg);
 void elementProcessing();
 
 #endif

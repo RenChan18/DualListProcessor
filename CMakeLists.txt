@@ -8,5 +8,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SOURCES
     src/main.c
     src/list.c
+    src/threads.c
 )
 add_executable(app ${SOURCES})

@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <pthread.h>
 typedef struct Node {
     int value;
     struct Node *next;
@@ -15,6 +15,7 @@ typedef struct List {
     size_t size;
     Node *head;
     Node *tail;
+    pthread_mutex_t mutex;
 } List;
 
 List* createList();

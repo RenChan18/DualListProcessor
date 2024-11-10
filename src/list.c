@@ -9,7 +9,7 @@ List* createList() {
     }
     tmp->size = 0;
     tmp->head = tmp->tail = NULL;
- 
+    pthread_mutex_init(&tmp->mutex, NULL);
     return tmp;
 }
 
@@ -22,6 +22,7 @@ void deleteList(List **list) {
         free(tmp);
         tmp = next;
     }
+    pthread_mutex_destroy(&(*list)->mutex);
     free(*list);
     (*list) = NULL;
 }
