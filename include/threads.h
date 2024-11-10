@@ -11,13 +11,9 @@
 #include <unistd.h> 
 #include "list.h"
 
-#ifndef RAND_RANGE
-#define RAND_RANGE 100
-#endif
-
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE 23
-#endif
+enum {rand_range = 100};
+enum {array_size = 23};
+enum {sleet_time = 1};
 
 typedef struct {
     List *list;
@@ -27,8 +23,8 @@ typedef struct {
 
 void random_fill(int *arr, size_t size);
 List* initAndFillList(); 
-void* processBitCount1(void *arg);
-void* processBitCount2(void *arg);
+void* processBitCount(void *arg);
+//void* processBitCount2(void *arg);
 void elementProcessing();
 
 #endif
