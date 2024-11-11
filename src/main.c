@@ -1,8 +1,8 @@
 // main.c
 #include "threads.h"
 
-int main(int argc, char *argv[]) {
+int main()
+{
     elementProcessing();
     return 0;
 }
-
