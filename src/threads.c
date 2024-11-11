@@ -1,79 +1,73 @@
 // threads.c
 #include "threads.h"
 
-int countOnesAndZeroes(int num, int threadIndex)
+int count_ones_or_zeroes(int num, int thread_index)
 {
-    int count0 = 0, count1 = 0;
+    int count_zeroes = 0, count_ones = 0;
     while (num > 0) {
         if (num & 1) {
-            count1++;
+            count_ones++;
         } else {
-            count0++;
+            count_zeroes++;
         }
         num = num >> 1;
     }
-    if (threadIndex == 1)
-        return count0;
-    else if (threadIndex == 2)
-        return count1;
+    if (thread_index == 1)
+        return count_zeroes;
+    else if (thread_index == 2)
+        return count_ones;
     return 0;
 }
 
-void *processBitCount(void *arg)
+void *process_bit_count(void *arg)
 {
     List *list          = ((ThreadArg *)arg)->list;
-    int   threadIndex   = ((ThreadArg *)arg)->threadIndex;
-    int   countOnes     = 0;
+    int   thread_index   = ((ThreadArg *)arg)->thread_index;
     int   countBits     = 0;
-    int   countZeroes   = 0;
     int   count_element = 0;
     while (1) {
         pthread_mutex_lock(&list->mutex);
 
-        if ((threadIndex == 1 && list->head == NULL) ||
-            (threadIndex == 2 && list->tail == NULL)) {
+        if ((thread_index == 1 && list->head == NULL) ||
+            (thread_index == 2 && list->tail == NULL)) {
             pthread_mutex_unlock(&list->mutex);
             break;
         }
 
-        if (threadIndex == 1) {
-            countOnes += countOnesAndZeroes(list->head->value, threadIndex);
-            countBits = countOnes;
+        if (thread_index == 1) {
+            countBits += count_ones_or_zeroes(list->head->value, thread_index);
             popFront(list);
-            printf("List after popFront: ");
         } else {
-            countZeroes += countOnesAndZeroes(list->tail->value, threadIndex);
-            countBits = countZeroes;
+            countBits += count_ones_or_zeroes(list->tail->value, thread_index);
             popBack(list);
-            printf("List after popBack: ");
         }
         printList(list);
         pthread_mutex_unlock(&list->mutex);
         count_element++;
         usleep(sleep_time); // Задержка 0.1 секунды
     }
-    printf("Thread %d count1: %d, count0: %d, count_el %d, CountBits:= %d\n",
-           threadIndex, countOnes, countZeroes, count_element, countBits);
+    printf("Thread %d count_elements:= %d, count_bits:= %d\n",
+           thread_index, count_element, countBits);
     return NULL;
 }
 
-void elementProcessing()
+void element_processing()
 {
     pthread_t thread1, thread2;
     int       iret1, iret2;
-    List     *list = initAndFillList();
+    List     *list = init_and_fill_list();
 
     ThreadArg arg1 = {list, 1};
     ThreadArg arg2 = {list, 2};
 
-    iret1 = pthread_create(&thread1, NULL, processBitCount, (void *)&arg1);
+    iret1 = pthread_create(&thread1, NULL, process_bit_count, (void *)&arg1);
 
     if (iret1) {
         fprintf(stderr, "Error - pthread_create() return code: %d\n", iret1);
         exit(EXIT_FAILURE);
     }
 
-    iret2 = pthread_create(&thread2, NULL, processBitCount, (void *)&arg2);
+    iret2 = pthread_create(&thread2, NULL, process_bit_count, (void *)&arg2);
     if (iret2) {
         fprintf(stderr, "Error - pthread_create() return code: %d\n", iret2);
         exit(EXIT_FAILURE);
@@ -83,5 +77,4 @@ void elementProcessing()
     printf("List after pops: ");
     printList(list);
 
-    printf("End...\n");
 }

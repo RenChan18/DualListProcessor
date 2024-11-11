@@ -23,13 +23,13 @@ typedef struct List {
     pthread_mutex_t mutex;
 } List;
 
-List *createList();
-void  deleteList(List **list);
-void  pushBack(List *list, int value);
-void  popFront(List *list);
-void  popBack(List *list);
-void  printList(const List *list);
+List *create_list();
+void  delete_list(List **list);
+void  push_back(List *list, int value);
+void  pop_front(List *list);
+void  pop_back(List *list);
+void  print_list(const List *list);
 void  random_fill(int *arr, size_t size);
-List *initAndFillList();
+List *init_and_fill_list();
 
 #endif // LIST_H

@@ -2,7 +2,7 @@
 #include "list.h"
 #include <stdio.h>
 
-List* createList() {
+List* create_list() {
     List *list = (List*) malloc(sizeof(List));
     if (list == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
@@ -14,7 +14,7 @@ List* createList() {
     return list;
 }
 
-void deleteList(List **list) {
+void delete_list(List **list) {
     if (list == NULL || *list == NULL) return;
     Node *current = (*list)->head;
     Node *next = NULL;
@@ -28,7 +28,7 @@ void deleteList(List **list) {
     (*list) = NULL;
 }
 
-void popFront (List *list) {
+void pop_front (List *list) {
     if (list == NULL || list->head == NULL) {
         fprintf(stderr, "List is empty or NULL\n");
         return;
@@ -48,7 +48,7 @@ void popFront (List *list) {
     pthread_mutex_unlock(&list->mutex);
 }
 
-void popBack (List *list) {
+void pop_back (List *list) {
     if (list == NULL || list->tail == NULL) {
         fprintf(stderr, "List is empty or NULL\n");
         return;
@@ -67,7 +67,7 @@ void popBack (List *list) {
     pthread_mutex_unlock(&list->mutex);
 }
 
-void pushBack (List *list, int value)
+void push_back (List *list, int value)
 {
     if (list == NULL) return;
     Node *tmp = (Node*) malloc(sizeof(Node));
@@ -91,7 +91,7 @@ void pushBack (List *list, int value)
     pthread_mutex_unlock(&list->mutex);
 }
 
-void printList(const List *list)
+void print_list(const List *list)
 {
     if (list == NULL) return;
     Node *p;
@@ -111,7 +111,7 @@ void random_fill(int *arr, size_t size) {
     }
 }
 
-List* initAndFillList() {
+List* init_and_fill_list() {
 int *arr = malloc(array_size * sizeof(int));
     if (arr == NULL) {
         printf("Memory allocation failed\n");
@@ -121,17 +121,17 @@ int *arr = malloc(array_size * sizeof(int));
     srand(time(NULL));
     random_fill(arr, array_size);
     
-    List *list = createList();
+    List *list = create_list();
     if (list == NULL) {
         fprintf(stderr, "Failed to create list\n");
         return NULL;
     }
 
     for (int i = 0; i < array_size; i++) {
-        pushBack(list, arr[i]);
+        push_back(list, arr[i]);
         
     }
     printf("List after adding elements: ");
-    printList(list);
+    print_list(list);
     return list;
 }
