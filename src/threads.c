@@ -36,12 +36,11 @@ void *process_bit_count(void *arg)
 
         if (thread_index == 1) {
             countBits += count_ones_or_zeroes(list->head->value, thread_index);
-            popFront(list);
+            pop_front(list);
         } else {
             countBits += count_ones_or_zeroes(list->tail->value, thread_index);
-            popBack(list);
+            pop_back(list);
         }
-        printList(list);
         pthread_mutex_unlock(&list->mutex);
         count_element++;
         usleep(sleep_time); // Задержка 0.1 секунды
@@ -75,6 +74,6 @@ void element_processing()
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
     printf("List after pops: ");
-    printList(list);
+    print_list(list);
 
 }
