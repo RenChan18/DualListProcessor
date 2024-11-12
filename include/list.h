@@ -8,7 +8,7 @@
 #include <time.h>
 
 enum { rand_range = 100 };
-enum { array_size = 23 };
+enum { array_size = 33 };
 
 typedef struct Node {
     int          value;
@@ -20,14 +20,13 @@ typedef struct List {
     size_t          size;
     Node           *head;
     Node           *tail;
-    pthread_mutex_t mutex;
 } List;
 
 List *create_list();
-void  delete_list(List **list);
+void  delete_list(List *list);
 void  push_back(List *list, int value);
-void  pop_front(List *list);
-void  pop_back(List *list);
+int  pop_front(List *list);
+int  pop_back(List *list);
 void  print_list(const List *list);
 void  random_fill(int *arr, size_t size);
 List *init_and_fill_list();
