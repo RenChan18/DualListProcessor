@@ -1,5 +1,8 @@
 // threads.c
 #include "threads.h"
+#include "list.h"
+
+pthread_mutex_t print_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int count_ones_or_zeroes(int num, int thread_index)
 {
@@ -12,41 +15,56 @@ int count_ones_or_zeroes(int num, int thread_index)
         }
         num = num >> 1;
     }
-    if (thread_index == 1)
-        return count_zeroes;
-    else if (thread_index == 2)
-        return count_ones;
-    return 0;
+    return (thread_index == 1) ? count_zeroes : count_ones;
 }
+
+
+void safe_print(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+
+    pthread_mutex_lock(&print_mutex);
+    vfprintf(stderr, format, args);
+    pthread_mutex_unlock(&print_mutex);
+
+    va_end(args);
+}
+
 
 void *process_bit_count(void *arg)
 {
     List *list          = ((ThreadArg *)arg)->list;
-    int   thread_index   = ((ThreadArg *)arg)->thread_index;
-    int   countBits     = 0;
+    int   thread_index  = ((ThreadArg *)arg)->thread_index;
+    int   count_bits     = 0;
     int   count_element = 0;
+    static pthread_mutex_t local_mutex = PTHREAD_MUTEX_INITIALIZER;
     while (1) {
-        pthread_mutex_lock(&list->mutex);
+        pthread_mutex_lock(&local_mutex);
 
         if ((thread_index == 1 && list->head == NULL) ||
             (thread_index == 2 && list->tail == NULL)) {
-            pthread_mutex_unlock(&list->mutex);
+            pthread_mutex_unlock(&local_mutex);
             break;
         }
-
+        int result;
         if (thread_index == 1) {
-            countBits += count_ones_or_zeroes(list->head->value, thread_index);
-            pop_front(list);
+            result = pop_front(list);
+            if (result != -1) {  // Если pop_front успешен
+                count_bits += count_ones_or_zeroes(result, thread_index);
+                count_element++;
+            }
         } else {
-            countBits += count_ones_or_zeroes(list->tail->value, thread_index);
-            pop_back(list);
+            result = pop_back(list);  // Вызов pop_back
+            if (result != -1) {  // Если pop_back успешен
+                count_bits += count_ones_or_zeroes(result, thread_index);
+                count_element++;
+            }
         }
-        pthread_mutex_unlock(&list->mutex);
-        count_element++;
-        usleep(sleep_time); // Задержка 0.1 секунды
+        pthread_mutex_unlock(&local_mutex);
+        usleep(sleep_time); 
     }
-    printf("Thread %d count_elements:= %d, count_bits:= %d\n",
-           thread_index, count_element, countBits);
+    safe_print("Thread %d count_elements:= %d, count_bits:= %d\n", 
+               thread_index, count_element, count_bits);
     return NULL;
 }
 
@@ -73,7 +91,4 @@ void element_processing()
     }
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
-    printf("List after pops: ");
-    print_list(list);
-
 }
